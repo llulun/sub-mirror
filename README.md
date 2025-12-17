@@ -41,7 +41,7 @@
 
 ```bash
 # 克隆仓库
-git clone https://github.com/your-username/sub-mirror.git
+git clone https://github.com/llulun/sub-mirror.git
 cd sub-mirror
 
 # 安装依赖
@@ -67,6 +67,10 @@ docker run -d \
   --name sub-mirror \
   ghcr.io/llulun/sub-mirror:latest
 ```
+
+> **注意**：如果您在拉取镜像时遇到 `denied` 错误，请前往 GitHub Packages 页面将镜像包的可见性设置为 **Public**。
+>
+> 默认端口映射为 `8080:8080`，如需修改外部访问端口（例如 8050），请使用 `-p 8050:8080`。
 
 ## ⚙️ 配置说明
 
