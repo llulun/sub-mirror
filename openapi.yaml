@@ -4,7 +4,9 @@ info:
   description: API for SubMirror - Subscription Mirroring and Management Tool
   version: 0.1.0
 servers:
-  - url: /
+  - url: https://enko.llulun.top
+    description: Production server
+  - url: http://localhost:8080
     description: Local server
 
 components:
@@ -78,6 +80,9 @@ components:
         updatedAt:
           type: string
           format: date-time
+        expiresAt:
+          type: string
+          format: date-time
         lastSyncStatus:
           type: string
         lastError:
@@ -112,6 +117,17 @@ components:
         exclude:
           type: string
           description: Comma-separated regex patterns
+        expiresAt:
+          type: string
+          format: date-time
+          nullable: true
+        ttlMinutes:
+          type: integer
+        durationUnit:
+          type: string
+          enum: [minutes, hours]
+        durationValue:
+          type: integer
 
 security:
   - BearerAuth: []
@@ -209,6 +225,8 @@ paths:
                     type: string
                   activeId:
                     type: string
+                  webhook:
+                    type: string
 
   /stats:
     get:
@@ -245,6 +263,26 @@ paths:
                 properties:
                   logs:
                     type: array
+
+  /refresh:
+    post:
+      summary: Refresh active source
+      responses:
+        '200':
+          description: Refresh successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  updatedAt:
+                    type: string
+                  etag:
+                    type: string
+        '502':
+          description: Refresh failed
 
   /sources:
     get:
