@@ -1274,6 +1274,8 @@ app.post('/sources', requireAuth, async (req, res) => {
   };
   await saveSources();
   res.json({ ok: true, id, token });
+  startTimersForUser(req.user.username);
+  triggerBackgroundSync(req.user.username, id);
 });
 app.post('/sources/:id/activate', requireAuth, async (req, res) => {
   const id = String(req.params.id || '');
@@ -1347,6 +1349,9 @@ app.put('/sources/:id', requireAuth, async (req, res) => {
   }
   await saveSources();
   startTimersForUser(req.user.username);
+  if (item.enabled) {
+     triggerBackgroundSync(req.user.username, id);
+  }
   res.json({ ok: true, token: item.token, expiresAt: item.expiresAt });
 });
 app.post('/sources/:id/rotate-token', requireAuth, async (req, res) => {
