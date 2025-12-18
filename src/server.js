@@ -1253,6 +1253,17 @@ app.get('/sources', requireAuth, (req, res) => {
 app.get('/api/:adminId/sources', requireAdminAny, (req, res) => {
   res.json({ activeId: state.activeId, items: Object.values(state.sources) });
 });
+// triggerBackgroundSync definition was missing
+async function triggerBackgroundSync(username, id) {
+  // Fire and forget sync to ensure data is fresh immediately after action
+  // We don't await this so the API returns quickly
+  fetchOnceForUser(username, id).catch(e => {
+    console.error(`[Background Sync] Failed for ${username}/${id}:`, e);
+  });
+}
+
+// ... existing code ...
+
 app.post('/sources', requireAuth, async (req, res) => {
   const v = validateSourcePayload(req.body || {}, 30);
   if (!v.url) return res.status(400).json({ message: 'invalid_url' });
