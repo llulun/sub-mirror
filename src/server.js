@@ -925,7 +925,7 @@ async function processResponse(res, item, username, u, targetId) {
       
       await storage.write(cachePathFor(targetId), buf);
       item.etag = res.headers.get('etag') || hashContent(buf);
-      await saveHistory(targetId, buf); // Save snapshot for small files
+      await saveHistory(targetId, buf); // Save snapshot
     } else {
       // STREAMING MODE
       appendLog(username, 'info', 'Starting streaming download...');
@@ -953,6 +953,18 @@ async function processResponse(res, item, username, u, targetId) {
       
       appendLog(username, 'info', `Streamed ${size} bytes`);
       item.etag = res.headers.get('etag') || hasher.digest('hex');
+      
+      // Save history snapshot even for streamed content
+      // We read it back from cache since we don't have the full buffer in memory during stream
+      // Limit to reasonable size to prevent OOM on history save if file is huge
+      if (size < MAX_CONTENT_SIZE) {
+         try {
+           const savedBuf = await storage.read(cachePathFor(targetId));
+           if (savedBuf) await saveHistory(targetId, savedBuf);
+         } catch (e) {
+           console.error('Failed to save history snapshot:', e);
+         }
+      }
     }
 
     item.updatedAt = new Date().toISOString();
@@ -1334,6 +1346,7 @@ app.put('/sources/:id', requireAuth, async (req, res) => {
     item.expiresAt = new Date(Date.now() + mins * 60 * 1000).toISOString();
   }
   await saveSources();
+  startTimersForUser(req.user.username);
   res.json({ ok: true, token: item.token, expiresAt: item.expiresAt });
 });
 app.post('/sources/:id/rotate-token', requireAuth, async (req, res) => {
