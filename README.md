@@ -60,6 +60,8 @@ docker run -d \
   -v $(pwd)/data:/app/data \
   -e ADMIN_USER=admin \
   -e ADMIN_PASS=your_secure_password \
+  -e CF_SITE_KEY=your_site_key \
+  -e CF_SECRET_KEY=your_secret_key \
   ghcr.io/llulun/sub-mirror:latest
 ```
 
@@ -84,6 +86,8 @@ services:
       - ADMIN_USER=admin
       - ADMIN_PASS=change_me_please
       - REFRESH_INTERVAL_MINUTES=30
+      - CF_SITE_KEY=your_turnstile_site_key
+      - CF_SECRET_KEY=your_turnstile_secret_key
 ```
 
 运行：
@@ -117,6 +121,7 @@ npm start
 | `ADMIN_USER` | 管理员账号 | `admin` |
 | `ADMIN_PASS` | 管理员密码 | *(随机生成)* |
 | `REFRESH_INTERVAL_MINUTES` | 默认自动同步间隔（分钟） | `30` |
+| `CF_SITE_KEY` | Cloudflare Turnstile 站点密钥 | *(可选)* |
 | `CF_SECRET_KEY` | Cloudflare Turnstile 密钥 | *(可选)* |
 | `ALLOWED_ORIGINS` | CORS 允许域名（逗号分隔） | `*` |
 
@@ -137,8 +142,8 @@ SubMirror 完美支持配合 Cloudflare 使用，以获得最佳的安全性和�
 ### 2. Turnstile 验证码
 在登录页面启用 Cloudflare Turnstile 人机验证：
 1. 在 Cloudflare 申请 Turnstile Site Key 和 Secret Key。
-2. 设置环境变量 `CF_SECRET_KEY` 为您的 Secret Key。
-3. 在前端代码或环境变量中配置 Site Key（目前需在 `public/index.html` 中配置 `data-sitekey`）。
+2. 设置环境变量 `CF_SITE_KEY` 和 `CF_SECRET_KEY`。
+3. 重启容器即可生效。
 
 ---
 

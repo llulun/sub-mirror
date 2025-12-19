@@ -25,6 +25,15 @@ ENV NODE_ENV=production
 ENV DATA_DIR=/app/data
 ENV STORAGE_TYPE=file
 
+# Admin Configuration
+ENV ADMIN_USER=admin
+ENV ADMIN_PASS=
+ENV ADMIN_TOKEN=
+
+# Cloudflare Configuration
+ENV CF_SITE_KEY=
+ENV CF_SECRET_KEY=
+
 # Expose port
 EXPOSE 8080
 
